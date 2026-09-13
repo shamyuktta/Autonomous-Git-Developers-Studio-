@@ -21,10 +21,14 @@ import { MultiAgentCodeReviewView } from "./components/views/MultiAgentCodeRevie
 import { PerformanceDashboardView } from "./components/views/PerformanceDashboardView";
 import { ProfileDashboardView } from "./components/views/ProfileDashboardView";
 import { LoginPageView } from "./components/views/LoginPageView";
+import { DocuGenDocumentationView } from "./components/views/DocuGenDocumentationView";
+import { AdvancedGPTChatView } from "./components/views/AdvancedGPTChatView";
+import { GitHubResourcesView } from "./components/views/GitHubResourcesView";
+import { FeedbackSupportChatbot } from "./components/FeedbackSupportChatbot";
 import { Footer } from "./components/Footer";
 import { ConnectModal } from "./components/ConnectModal";
 import { UserProfile, SystemHealth, VirtualFile, ThemeMode } from "./types/studio";
-import { getStoredUser, clearUserSession, getStoredGitHubToken } from "./services/auth";
+import { getStoredUser, clearUserSession, getStoredGitHubToken, saveUserSession } from "./services/auth";
 import { checkSystemHealth } from "./services/gemini";
 import {
   getStoredActivities,
@@ -176,16 +180,20 @@ export default function App() {
     clearUserSession();
     setCurrentUser(null);
     setGithubConnected(false);
-    setActiveTab("dashboard");
-    showNotification("Signed out of session. Please sign in to continue.", "info");
+    setActiveTab("profile");
+    showNotification("Signed out of session. Returned to Login Screen.", "info");
   };
 
-  const handleLoginSuccess = (user: UserProfile) => {
+  const handleLoginSuccess = (user: UserProfile, targetTab: ActiveTab = "profile") => {
     setCurrentUser(user);
     if (user.githubConnected) {
       setGithubConnected(true);
     }
-    showNotification(`Welcome back, ${user.name}! Workspace ready.`, "success");
+    setActiveTab(targetTab);
+    showNotification(
+      `Welcome back, ${user.name}! ${targetTab === "profile" ? "Opened Profile Dashboard." : "Workspace ready."}`,
+      "success"
+    );
   };
 
   // If unauthenticated, immediately display full-screen Login Page
@@ -335,6 +343,44 @@ export function slugify(str: string): string {
           />
         )}
 
+        {activeTab === "docugen" && (
+          <DocuGenDocumentationView
+            files={files}
+            onSaveFileToWorkspace={(newFile) => {
+              setFiles((prev) => {
+                const exists = prev.some((f) => f.path === newFile.path);
+                if (exists) {
+                  return prev.map((f) => (f.path === newFile.path ? newFile : f));
+                }
+                return [...prev, newFile];
+              });
+              showNotification(`Saved ${newFile.name} to active workspace!`, "success");
+            }}
+            onNavigateToGitHub={() => setActiveTab("github")}
+          />
+        )}
+
+        {activeTab === "gpt_chat" && (
+          <AdvancedGPTChatView
+            onInsertCodeToWorkspace={(code, fileName) => {
+              const newFile: VirtualFile = {
+                id: `gpt-file-${Date.now()}`,
+                name: fileName || "generated-module.ts",
+                path: `src/${fileName || "generated-module.ts"}`,
+                content: code,
+                language: "typescript",
+                isPendingCommit: true,
+                size: code.length,
+              };
+              setFiles((prev) => [...prev, newFile]);
+              showNotification(`Pushed AI code to ${newFile.path}!`, "success");
+              setActiveTab("workspace");
+            }}
+          />
+        )}
+
+        {activeTab === "resources" && <GitHubResourcesView />}
+
         {activeTab === "codegen" && (
           <ProductionCodeGenView
             onPushToWorkspace={handlePushToWorkspace}
@@ -346,6 +392,21 @@ export function slugify(str: string): string {
           <GitHubConnectView
             githubConnected={githubConnected}
             onConnectionChange={setGithubConnected}
+            files={files}
+            onSaveFileToWorkspace={(newFile) => {
+              setFiles((prev) => {
+                const exists = prev.some((f) => f.path === newFile.path);
+                if (exists) {
+                  return prev.map((f) => (f.path === newFile.path ? newFile : f));
+                }
+                return [...prev, newFile];
+              });
+              showNotification(`Saved ${newFile.path} to active workspace!`, "success");
+            }}
+            onAddActivity={(act) => {
+              saveActivity(act);
+              setActivities(getStoredActivities());
+            }}
           />
         )}
 
@@ -399,7 +460,21 @@ export function slugify(str: string): string {
           />
         )}
 
-        {activeTab === "cicd" && <CICDPipelineView />}
+        {activeTab === "cicd" && (
+          <CICDPipelineView
+            onNavigateToGitHubActions={() => setActiveTab("github")}
+            onSaveWorkflowToWorkspace={(newFile) => {
+              setFiles((prev) => {
+                const exists = prev.some((f) => f.path === newFile.path);
+                if (exists) {
+                  return prev.map((f) => (f.path === newFile.path ? newFile : f));
+                }
+                return [...prev, newFile];
+              });
+              showNotification(`Saved ${newFile.path} to active workspace!`, "success");
+            }}
+          />
+        )}
 
         {activeTab === "review" && (
           <MultiAgentCodeReviewView
@@ -429,11 +504,30 @@ export function slugify(str: string): string {
               }
             }}
             onUpdateFileContent={(id, content) => {
-              setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, content } : f)));
+              setFiles((prev) =>
+                prev.map((f) => (f.id === id ? { ...f, content, isModified: true } : f))
+              );
             }}
             onAddFiles={(newFiles) => setFiles((prev) => [...prev, ...newFiles])}
             onPurgeDeadFiles={handlePurgeDeadFiles}
             onConsolidateDuplicates={handleConsolidateDuplicates}
+            onNavigateToGitHub={() => setActiveTab("github")}
+          />
+        )}
+
+        {activeTab === "profile" && currentUser && (
+          <ProfileDashboardView
+            currentUser={currentUser}
+            onUpdateProfile={(updated) => {
+              setCurrentUser(updated);
+              saveUserSession(updated);
+              showNotification("Profile details updated successfully", "success");
+            }}
+            activities={activities}
+            workspaceFileCount={files.length}
+            githubConnected={githubConnected}
+            onNavigateToTab={setActiveTab}
+            onLogout={handleLogout}
           />
         )}
       </main>
@@ -502,6 +596,9 @@ export function slugify(str: string): string {
           showNotification(`Authenticated as ${user.name}`, "success");
         }}
       />
+
+      {/* Floating Bottom AI Feedback & Support Chatbot (WhatsApp & Admin Email) */}
+      <FeedbackSupportChatbot userEmail={currentUser?.email || "shamyukttab@gmail.com"} />
     </div>
   );
 }

@@ -224,3 +224,65 @@ export interface SystemHealth {
     fast: string;
   };
 }
+
+// Multi-Model GPT Specification
+export interface LLMModelOption {
+  id: string;
+  name: string;
+  version: string;
+  provider: "Google Gemini" | "Anthropic" | "xAI Grok" | "OpenAI" | "DeepSeek" | "Meta Llama";
+  providerLogo?: string;
+  badge: string;
+  contextWindow: string;
+  description: string;
+  releaseDate: string;
+  speed: "Ultra Fast" | "Fast" | "Deep Reasoning";
+  strengths: string[];
+  maxThinkingTokens?: number;
+}
+
+export interface ChatMessageItem {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  timestamp: number;
+  modelUsed?: string;
+  thinkingProcess?: string;
+  tokensCount?: number;
+  copied?: boolean;
+}
+
+// Curated GitHub Learning Resource
+export interface GitHubLearningResource {
+  id: string;
+  title: string;
+  repoName: string;
+  repoUrl: string;
+  stars: string;
+  forks: string;
+  level: "beginner" | "intermediate" | "advanced";
+  category: "Git Fundamentals" | "CI/CD & Actions" | "Architecture & System Design" | "AST & Compilers" | "DevSecOps & Best Practices" | "Open Source Contribution";
+  summary: string;
+  whyLearn: string;
+  topics: string[];
+  cloneCommand: string;
+  curatedDocsUrl?: string;
+}
+
+// Feedback & Support Bot Types
+export type SupportCategory = "bug" | "enquiry" | "feature_request" | "general_help";
+
+export interface SupportTicket {
+  id: string;
+  ticketNumber: string;
+  category: SupportCategory;
+  userQuery: string;
+  resolutionSummary?: string;
+  timestamp: number;
+  status: "open" | "resolved" | "forwarded";
+  sentVia?: "email" | "whatsapp" | "both";
+  adminEmail: string;
+  whatsappContact?: string;
+}
+
+

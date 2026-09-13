@@ -20,6 +20,8 @@ import {
   ArrowRight,
   FileText,
   GitCommit,
+  Bot,
+  GraduationCap,
 } from "lucide-react";
 
 interface CommandPaletteProps {
@@ -70,6 +72,36 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       shortcut: "⌘1",
       action: () => {
         onNavigate("dashboard");
+        onClose();
+      },
+    },
+    {
+      id: "nav-docugen",
+      title: "Go to DocuGen AI Repository Documentation",
+      category: "Navigation",
+      icon: <FileText className="w-4 h-4 text-emerald-400" />,
+      action: () => {
+        onNavigate("docugen");
+        onClose();
+      },
+    },
+    {
+      id: "nav-gpt-chat",
+      title: "Go to Advanced Multi-Model GPT Chat (+)",
+      category: "Navigation",
+      icon: <Bot className="w-4 h-4 text-indigo-400" />,
+      action: () => {
+        onNavigate("gpt_chat");
+        onClose();
+      },
+    },
+    {
+      id: "nav-resources",
+      title: "Go to GitHub Resources & Learning Hub",
+      category: "Navigation",
+      icon: <GraduationCap className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        onNavigate("resources");
         onClose();
       },
     },

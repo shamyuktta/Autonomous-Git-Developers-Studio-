@@ -26,10 +26,15 @@ import {
   Package,
   GitPullRequest,
   Gauge,
+  Bot,
+  GraduationCap,
 } from "lucide-react";
 
 export type ActiveTab =
   | "dashboard"
+  | "docugen"
+  | "gpt_chat"
+  | "resources"
   | "codegen"
   | "readme"
   | "activity"
@@ -80,6 +85,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navItems: Array<{ id: ActiveTab; label: string; icon: React.ReactNode; badge?: string }> = [
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-3.5 h-3.5" /> },
+    { id: "docugen", label: "DocuGen AI", icon: <FileText className="w-3.5 h-3.5 text-emerald-400" />, badge: "Spec" },
+    { id: "gpt_chat", label: "Advanced GPT", icon: <Bot className="w-3.5 h-3.5 text-indigo-400" />, badge: "(+)" },
+    { id: "resources", label: "GitHub Hub", icon: <GraduationCap className="w-3.5 h-3.5 text-amber-400" /> },
     { id: "codegen", label: "AI Generator", icon: <Sparkles className="w-3.5 h-3.5 text-purple-400" /> },
     { id: "readme", label: "Pro README", icon: <FileText className="w-3.5 h-3.5 text-emerald-400" /> },
     { id: "activity", label: "GitHub Live", icon: <GitCommit className="w-3.5 h-3.5 text-indigo-400" /> },
@@ -98,6 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: "debugger", label: "Debugger", icon: <Bug className="w-3.5 h-3.5 text-amber-400" /> },
     { id: "vscode", label: "VS Code", icon: <Terminal className="w-3.5 h-3.5 text-sky-400" /> },
     { id: "workspace", label: "Code Studio", icon: <Code2 className="w-3.5 h-3.5 text-violet-400" /> },
+    { id: "profile", label: "Profile", icon: <User className="w-3.5 h-3.5 text-indigo-400" /> },
   ];
 
   return (

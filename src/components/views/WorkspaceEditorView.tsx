@@ -25,6 +25,7 @@ import {
   FilePlus,
   Terminal,
   Layers,
+  Upload,
 } from "lucide-react";
 
 interface WorkspaceEditorViewProps {
@@ -35,6 +36,7 @@ interface WorkspaceEditorViewProps {
   onAddFiles: (newFiles: VirtualFile[]) => void;
   onPurgeDeadFiles: () => void;
   onConsolidateDuplicates: () => void;
+  onNavigateToGitHub?: () => void;
 }
 
 export const WorkspaceEditorView: React.FC<WorkspaceEditorViewProps> = ({
@@ -45,6 +47,7 @@ export const WorkspaceEditorView: React.FC<WorkspaceEditorViewProps> = ({
   onAddFiles,
   onPurgeDeadFiles,
   onConsolidateDuplicates,
+  onNavigateToGitHub,
 }) => {
   // Multi-tab files state
   const [openTabIds, setOpenTabIds] = useState<string[]>([
@@ -211,6 +214,16 @@ export const WorkspaceEditorView: React.FC<WorkspaceEditorViewProps> = ({
               <Command className="w-3.5 h-3.5" />
               <span>Slash Commands</span>
             </button>
+
+            {onNavigateToGitHub && (
+              <button
+                onClick={onNavigateToGitHub}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>Export to GitHub</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -221,7 +234,7 @@ export const WorkspaceEditorView: React.FC<WorkspaceEditorViewProps> = ({
               <span>Agent Hooks & Slash Commands</span>
               <span className="text-[10px] text-slate-500 font-mono">Click to execute</span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               <button
                 onClick={() => executeSlashCommand("/fix-imports")}
                 className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800/80 text-left text-xs transition-all"
@@ -250,6 +263,18 @@ export const WorkspaceEditorView: React.FC<WorkspaceEditorViewProps> = ({
                 <div className="font-mono text-amber-400 font-bold">/dedupe</div>
                 <div className="text-[10px] text-slate-400 mt-0.5">Consolidate dead files</div>
               </button>
+              {onNavigateToGitHub && (
+                <button
+                  onClick={() => {
+                    setIsSlashMenuOpen(false);
+                    onNavigateToGitHub();
+                  }}
+                  className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800/80 text-left text-xs transition-all"
+                >
+                  <div className="font-mono text-indigo-400 font-bold">/push-github</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Export project to repo</div>
+                </button>
+              )}
             </div>
           </div>
         )}
