@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html.theme-light {
+  color-scheme: light;
+}
+
+html.theme-light body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .bg-slate-950,
+html.theme-light .bg-zinc-950 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .bg-slate-900,
+html.theme-light .bg-zinc-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .border-slate-800,
+html.theme-light .border-zinc-800,
+html.theme-light .border-slate-700 {
+  border-color: #e2e8f0 !important;
+}
+
+html.theme-light .text-white,
+html.theme-light .text-slate-100,
+html.theme-light .text-slate-200 {
+  color: #0f172a !important;
+}
+
+html.theme-light .text-slate-300,
+html.theme-light .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.theme-light .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.theme-midnight body,
+html.theme-midnight .bg-slate-950,
+html.theme-midnight .bg-slate-900 {
+  background-color: #000000 !important;
+}
+
+html.theme-midnight .border-slate-800,
+html.theme-midnight .border-slate-700 {
+  border-color: #1f1f23 !important;
+}
